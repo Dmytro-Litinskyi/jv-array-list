@@ -121,9 +121,9 @@ public class ArrayList<T> implements List<T> {
                     return i;
                 }
             }
+            return -1;
         }
         for (int i = 0; i < size; i++) {
-            assert element != null;
             if (element.equals(objectData[i])) {
                 return i;
             }
