@@ -4,7 +4,7 @@ import java.util.NoSuchElementException;
 
 public class ArrayList<T> implements List<T> {
     public static final int BASE_CAPACITY = 10;
-    public static final int GROW_CAPACITY = 1;
+    public static final int GROWTH_SHIFT_AMOUNT = 1;
     private Object[] objectData;
     private int size;
 
@@ -57,21 +57,23 @@ public class ArrayList<T> implements List<T> {
     @Override
     public T remove(int index) {
         indexValidation(index);
-        T removedEl = (T) objectData[index];
-        for (int i = index + 1; i < size; i++) {
-            objectData[i - 1] = objectData[i];
-            objectData[i] = null;
+        final T removedEl = (T) objectData[index];
+        int numMoved = size - index - 1;
+        if (numMoved > 0) {
+            System.arraycopy(objectData, index + 1, objectData, index, numMoved);
         }
         size--;
+        objectData[size] = null;
         return removedEl;
     }
 
     @Override
     public T remove(T element) {
-        if (findIndexOfElement(element) == -1) {
+        int index = findIndexOfElement(element);
+        if (index == -1) {
             throw new NoSuchElementException("No such element in this array");
         }
-        return remove(findIndexOfElement(element));
+        return remove(index);
     }
 
     @Override
@@ -90,7 +92,7 @@ public class ArrayList<T> implements List<T> {
             return;
         }
         int oldCapacity = objectData.length;
-        int newCapacity = oldCapacity + (oldCapacity >> GROW_CAPACITY);
+        int newCapacity = oldCapacity + (oldCapacity >> GROWTH_SHIFT_AMOUNT);
         if (newCapacity < requiredCapacity) {
             newCapacity = requiredCapacity;
         }
